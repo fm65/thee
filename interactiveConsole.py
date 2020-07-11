@@ -5,3 +5,4 @@ if __name__ == '__main__':
     vars.update(locals())
     shell = code.InteractiveConsole(vars)
     shell.interact() 
+

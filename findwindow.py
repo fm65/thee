@@ -3,11 +3,10 @@ import tkinter.ttk as ttk
 
 
 class FindWindow(tk.Toplevel):
-    def __init__(self, master, text_widget, **kwargs):
+    def __init__(self, master, **kwargs):
         super().__init__(**kwargs)
 
         self.master = master
-        self.text_widget = text_widget
 
         self.geometry('350x100')
         self.title('Find and Replace')
@@ -50,13 +49,13 @@ class FindWindow(tk.Toplevel):
         self.protocol("WM_DELETE_WINDOW", self.on_cancel)
 
     def on_find(self):
-        self.text_widget.find(self.text_to_find.get())
+        self.master.find(self.text_to_find.get())
 
     def on_replace(self):
-        self.text_widget.replace_text(self.text_to_find.get(), self.text_to_replace_with.get())
+        self.master.replace_text(self.text_to_find.get(), self.text_to_replace_with.get())
 
     def on_cancel(self):
-        self.text_widget.cancel_find()
+        self.master.cancel_find()
         self.destroy()
 
 

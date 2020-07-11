@@ -3,8 +3,9 @@ import config
 
 
 class LineNumbers(tk.Canvas):
-    def __init__(self, text_widget, *args, **kwargs):
-        tk.Canvas.__init__(self, *args, **kwargs)
+    def __init__(self, master, text_widget, *args, **kwargs):
+        super().__init__(master, *args, **kwargs)
+        self.master = master
         self.text_widget = text_widget
         self.redraw()
     
