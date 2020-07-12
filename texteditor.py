@@ -36,11 +36,17 @@ class MainWindow(tk.Tk):
         self.minsize(550, 40) # (width, height)
         self.winfo_screenwidth  = self.winfo_screenwidth()
         self.winfo_screenheight = self.winfo_screenheight()
-        self.grid_columnconfigure(1, weight=1)
-        self.grid_rowconfigure(1, weight=1)
+        self.grid_columnconfigure(0, weight=1)
+        self.grid_rowconfigure(0, weight=1)
         self.width  = int(self.winfo_screenwidth/3)
         self.height = int(self.winfo_screenheight/3)
         self.geometry(f'{self.width}x{self.height}')
+
+        self.frame1 = tk.Frame(self, bg="green", width=self.width, height=self.height-15)
+        self.frame2 = tk.Frame(self, bg="red", width=self.width, height=10)
+
+        self.frame1.grid(row=0, column=0,  sticky='wens')
+        self.frame2.grid(row=1, column=0,  sticky='wens')
         
         self.thee_mode   = 0 # 0: welcome, 1: editor, 2: terminal, 3: help 
         self.count_text_changed   = 0
@@ -69,7 +75,7 @@ class MainWindow(tk.Tk):
         self.statusbar_font_size   = config.font['statusbar']['size']
         self.statusbar_font_family = config.font['statusbar']['family']
 
-        self.create_text_widget() # Entry point ==========#
+        self.create_widget() # Entry point ==========#
         self.terminal = Terminal(self, self.text_area) # run terminal
 
         self.bind_events()
@@ -78,14 +84,32 @@ class MainWindow(tk.Tk):
 
         self.protocol("WM_DELETE_WINDOW", self.close_window)
 
-    def create_text_widget(self):
-        self.text_area = TextArea(self, bg=self.text_background, 
+    def create_widget(self):
+        self.text_area = TextArea(self.frame1, bg=self.text_background, 
         fg=self.text_foreground, undo=True, relief=tk.FLAT,
         font=(self.text_font_family, self.text_font_size),  
         insertbackground=self.insertbackground)
         self.text_area.config(highlightthickness = 0)
-        self.text_area.grid(row=1, column=1, sticky='wens')
         self.text_area.focus_set()
+        
+        self.line_numbers = LineNumbers(self.frame1, self.text_area)
+        self.line_numbers.config(bg=self.text_background,
+        width=len(self.line_numbers.line_number)*10, highlightthickness=0)
+
+        self.status_bar1 = StatusBar(self.frame2, bg="pink", width=30, height=10)
+        self.status_bar2 = StatusBar(self.frame2, bg="orange", width=30, height=10)
+        self.status_bar3 = StatusBar(self.frame2, bg="blue", width=30, height=10)
+        self.status_bar4 = StatusBar(self.frame2, bg="green", width=30, height=10)
+        self.status_bar5 = StatusBar(self.frame2, bg="purple", width=30, height=10)
+        
+        self.line_numbers.pack(side=tk.LEFT, fill=tk.Y)
+        self.text_area.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        self.status_bar1.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        self.status_bar2.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        self.status_bar3.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        self.status_bar4.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        self.status_bar5.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+
         self.welcome(event=None)
 
     def editor_mode(self, event=None):
@@ -94,21 +118,15 @@ class MainWindow(tk.Tk):
         self.text_area.insert(tk.END, self.editor_mode_buffer)
         self.highlighter = Highlighter(self.text_area)
         self.thee_mode = 1
-
-        self.line_numbers = LineNumbers(self, self.text_area)
-        self.line_numbers.config(bg=self.text_background,
-        width=len(self.line_numbers.line_number)*10, highlightthickness=0)
-        self.line_numbers.grid(row=1, column=0,  sticky='nsw')
-
-        self.status_bar = StatusBar(self)
-        self.status_bar.config(height=15, highlightthickness=0)
-        self.status_bar.grid(row=2, column=0,  sticky='nwe', columnspan=2)
-        self.update_status_bar()
+        self.status_bar1.set("Line %d, Column %d" %(self.line, self.column))
+        self.status_bar3.set("%s" %self.file_name)
+        self.status_bar5.set("Spaces: %d \t %s" %(self.spaces, self.status))
 
     def terminal_mode(self, event=None):
         if self.thee_mode == 1:
-            self.line_numbers.destroy()
-            self.status_bar.destroy()
+            #self.line_numbers.destroy()
+            #self.status_bar.destroy()
+            pass
         self.text_area.config(state=tk.NORMAL, tabs=4)
         self.text_area.delete('1.0', tk.END)
         self.text_area.insert(tk.END, self.terminal_mode_buffer)
@@ -122,11 +140,12 @@ class MainWindow(tk.Tk):
             if self.thee_mode == 1 and self.count_text_changed > 1: # editor mode
                 self.editor_mode_buffer = self.text_area.get(1.0,  tk.END+"-1c")
                 self.status = "unsaved"
-                self.update_status_bar()
+                self.status_bar5.set("Spaces: %d %s" %(self.spaces, self.status))
                 self.update_line_column()
                 self.line_numbers.config(width=len(self.line_numbers.line_number)*10)
             elif self.thee_mode == 2 and self.count_text_changed > 1: # terminal mode
                 self.terminal_mode_buffer = self.text_area.get(1.0,  tk.END+"-1c")
+                self.line_numbers.config(width=len(self.line_numbers.line_number)*10)
             self.count_text_changed += 1
         #reset so this will be called on the next change
         self.text_area.edit_modified(False)
@@ -155,14 +174,8 @@ class MainWindow(tk.Tk):
             line, column = self.text_area.index(tk.INSERT).split('.')
             self.line   = int(line)
             self.column = int(column)+1 
-            self.update_status_bar()
+            self.status_bar1.set("Line %d, Column %d" %(self.line,self.column))
             
-    def update_status_bar(self):
-        formatted_status_bar = f'{"Line ".rjust(10)}{self.line}, {"Column ".rjust(1)}{self.column}\
-        {self.file_name.rjust(30)}\
-        {"Spaces: ".rjust(40)}{self.spaces} {self.status.rjust(10)}'
-        self.status_bar.set(formatted_status_bar)
-
     def close_window(self):
         if self.editor_mode_buffer and self.status == "unsaved": #and self.status.get() == "unsaved": #SATUSBAR
             if msg.askokcancel("Quit", "Would you like to save the data?"):
@@ -201,12 +214,13 @@ class MainWindow(tk.Tk):
             self.terminal.enter()
 
     def show_find_window(self, event=None):
-        FindWindow(self.text_area)
+        FindWindow(self.frame1, self.text_area)
 
     def show_welcome_page(self):
         if self.thee_mode == 1:
-            self.line_numbers.destroy()
-            self.status_bar.destroy()
+            #self.line_numbers.destroy()
+            #self.frame2.destroy()
+            pass
         self.text_area.config(state=tk.NORMAL)
         self.text_area.delete('1.0', tk.END)
         message = '''
@@ -230,8 +244,9 @@ class MainWindow(tk.Tk):
 
     def show_about_page(self):
         if self.thee_mode == 1:
-            self.line_numbers.destroy()
-            self.status_bar.destroy()
+            #self.line_numbers.destroy()
+            #self.frame2.destroy()
+            pass
         self.text_area.config(state=tk.NORMAL)
         self.text_area.delete('1.0', tk.END)
         message = '''
@@ -312,7 +327,7 @@ class MainWindow(tk.Tk):
         if file_to_open:
             self.open_file = file_to_open
             self.file_name = self.open_file.split('/')[-1]
-            self.update_status_bar()
+            self.status_bar3.set("%s" %self.file_name)
 
             self.text_area.display_file_contents(file_to_open)
             self.highlighter.force_highlight()
@@ -328,14 +343,14 @@ class MainWindow(tk.Tk):
             filetypes=[('Python files', '*.py')], defaultextension='.py')
             self.open_file = current_file
             self.file_name = current_file.split('/')[-1]
-            self.update_status_bar()
+            self.status_bar3.set("%s" %self.file_name)
 
         if current_file:
             contents = self.text_area.get(1.0, tk.END)
             with open(current_file, 'w') as file:
                 file.write(contents)
                 self.status = "saved"
-                self.update_status_bar()
+                self.status_bar5.set("Spaces: %d %s" %(self.spaces, self.status))
 
     def file_save_as(self, event=None):
         """
@@ -348,7 +363,7 @@ class MainWindow(tk.Tk):
         f.write(self.get('1.0', 'end'))
         f.close()
         self.status = "saved"
-        self.update_status_bar()
+        self.status_bar5.set("Spaces: %d %s" %(self.spaces, self.status))
 
     def edit_cut(self, event=None):
         """

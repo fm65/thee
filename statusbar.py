@@ -2,12 +2,14 @@ import tkinter as tk
 import config
 
 
-class StatusBar(tk.Frame):
-    def __init__(self, master):
-        tk.Frame.__init__(self, master)
-        self.label = tk.Label(self, anchor="w",
+class StatusBar(tk.Canvas):
+    def __init__(self, master, bg, *args, **kwargs):
+        super().__init__(master, highlightthickness=0, *args, **kwargs)
+        self.master = master
+        self.bg = bg
+        self.label  = tk.Label(self,
         font=(config.font['statusbar']['family'], 
-        config.font['statusbar']['size']), 
+        config.font['statusbar']['size']),
         background=config.color['statusbarbg'],
         foreground=config.color['foreground'])
         self.label.pack(fill="x")

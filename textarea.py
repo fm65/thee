@@ -3,8 +3,8 @@ import tkinter.messagebox as msg
 
 
 class TextArea(tk.Text):
-    def __init__(self, master, **kwargs):
-        super().__init__(**kwargs)
+    def __init__(self, master, *args, **kwargs):
+        super().__init__(master, *args, **kwargs)
 
         self.master = master
 
