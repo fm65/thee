@@ -32,7 +32,7 @@ class MainWindow(tk.Tk):
     def __init__(self):
         super().__init__()
 
-        self.title('thee')
+        self.title('THEE')
         self.minsize(550, 40) # (width, height)
         self.winfo_screenwidth  = self.winfo_screenwidth()
         self.winfo_screenheight = self.winfo_screenheight()
@@ -41,12 +41,6 @@ class MainWindow(tk.Tk):
         self.width  = int(self.winfo_screenwidth/3)
         self.height = int(self.winfo_screenheight/3)
         self.geometry(f'{self.width}x{self.height}')
-
-        self.frame1 = tk.Frame(self, bg="green", width=self.width, height=self.height-15)
-        self.frame2 = tk.Frame(self, bg="red", width=self.width, height=10)
-
-        self.frame1.grid(row=0, column=0,  sticky='wens')
-        self.frame2.grid(row=1, column=0,  sticky='wens')
         
         self.thee_mode   = 0 # 0: welcome, 1: editor, 2: terminal, 3: help 
         self.count_text_changed   = 0
@@ -66,7 +60,18 @@ class MainWindow(tk.Tk):
         self.text_background  = config.color['text_background']
         self.insertbackground = config.color['insertbackground']
         self.statusbar_background = config.color['statusbarbg']
-   
+
+        self.frame1 = tk.Frame(self, bg=self.background, 
+        width=self.width, height=self.height-15)
+        self.frame2 = tk.Frame(self, bg=self.statusbar_background, 
+        width=self.width, height=10)
+
+        self.frame1.grid(row=0, column=0,  sticky='wens')
+        self.frame2.grid(row=1, column=0,  sticky='wens')
+
+        self.frame1.grid_columnconfigure(1, weight=1)
+        self.frame1.grid_rowconfigure(0, weight=1)
+       
         self.config_dir = os.path.join(str(Path.home()), '.thee')
 
         self.text_font_size   = config.font['text']['size']
@@ -90,27 +95,22 @@ class MainWindow(tk.Tk):
         font=(self.text_font_family, self.text_font_size),  
         insertbackground=self.insertbackground)
         self.text_area.config(highlightthickness = 0)
+        self.text_area.grid(row=0, column=1,  sticky='wens')
         self.text_area.focus_set()
-        
-        self.line_numbers = LineNumbers(self.frame1, self.text_area)
-        self.line_numbers.config(bg=self.text_background,
-        width=len(self.line_numbers.line_number)*10, highlightthickness=0)
+        self.welcome(event=None)
 
         self.status_bar1 = StatusBar(self.frame2, bg="pink", width=30, height=10)
         self.status_bar2 = StatusBar(self.frame2, bg="orange", width=30, height=10)
         self.status_bar3 = StatusBar(self.frame2, bg="blue", width=30, height=10)
         self.status_bar4 = StatusBar(self.frame2, bg="green", width=30, height=10)
         self.status_bar5 = StatusBar(self.frame2, bg="purple", width=30, height=10)
-        
-        self.line_numbers.pack(side=tk.LEFT, fill=tk.Y)
-        self.text_area.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+
         self.status_bar1.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         self.status_bar2.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         self.status_bar3.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         self.status_bar4.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         self.status_bar5.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
-        self.welcome(event=None)
 
     def editor_mode(self, event=None):
         self.text_area.config(state=tk.NORMAL, tabs=4)
@@ -118,15 +118,20 @@ class MainWindow(tk.Tk):
         self.text_area.insert(tk.END, self.editor_mode_buffer)
         self.highlighter = Highlighter(self.text_area)
         self.thee_mode = 1
+
+        self.line_numbers = LineNumbers(self.frame1, self.text_area)
+        self.line_numbers.config(bg=self.text_background,
+        width=len(self.line_numbers.line_number)*10, highlightthickness=0)
+        self.line_numbers.grid(row=0, column=0,  sticky='ns')
+
         self.status_bar1.set("Line %d, Column %d" %(self.line, self.column))
         self.status_bar3.set("%s" %self.file_name)
-        self.status_bar5.set("Spaces: %d \t %s" %(self.spaces, self.status))
+        self.status_bar4.set("Spaces: %d" %self.spaces)
+        self.status_bar5.set("%s" %self.status)
 
     def terminal_mode(self, event=None):
         if self.thee_mode == 1:
-            #self.line_numbers.destroy()
-            #self.status_bar.destroy()
-            pass
+            self.line_numbers.destroy()
         self.text_area.config(state=tk.NORMAL, tabs=4)
         self.text_area.delete('1.0', tk.END)
         self.text_area.insert(tk.END, self.terminal_mode_buffer)
@@ -140,12 +145,11 @@ class MainWindow(tk.Tk):
             if self.thee_mode == 1 and self.count_text_changed > 1: # editor mode
                 self.editor_mode_buffer = self.text_area.get(1.0,  tk.END+"-1c")
                 self.status = "unsaved"
-                self.status_bar5.set("Spaces: %d %s" %(self.spaces, self.status))
+                self.status_bar5.set("%s" %self.status)
                 self.update_line_column()
                 self.line_numbers.config(width=len(self.line_numbers.line_number)*10)
             elif self.thee_mode == 2 and self.count_text_changed > 1: # terminal mode
                 self.terminal_mode_buffer = self.text_area.get(1.0,  tk.END+"-1c")
-                self.line_numbers.config(width=len(self.line_numbers.line_number)*10)
             self.count_text_changed += 1
         #reset so this will be called on the next change
         self.text_area.edit_modified(False)
@@ -218,9 +222,7 @@ class MainWindow(tk.Tk):
 
     def show_welcome_page(self):
         if self.thee_mode == 1:
-            #self.line_numbers.destroy()
-            #self.frame2.destroy()
-            pass
+            self.line_numbers.destroy()
         self.text_area.config(state=tk.NORMAL)
         self.text_area.delete('1.0', tk.END)
         message = '''
@@ -244,9 +246,7 @@ class MainWindow(tk.Tk):
 
     def show_about_page(self):
         if self.thee_mode == 1:
-            #self.line_numbers.destroy()
-            #self.frame2.destroy()
-            pass
+            self.line_numbers.destroy()
         self.text_area.config(state=tk.NORMAL)
         self.text_area.delete('1.0', tk.END)
         message = '''
@@ -350,7 +350,7 @@ class MainWindow(tk.Tk):
             with open(current_file, 'w') as file:
                 file.write(contents)
                 self.status = "saved"
-                self.status_bar5.set("Spaces: %d %s" %(self.spaces, self.status))
+                self.status_bar5.set("%s" %self.status)
 
     def file_save_as(self, event=None):
         """
@@ -363,7 +363,7 @@ class MainWindow(tk.Tk):
         f.write(self.get('1.0', 'end'))
         f.close()
         self.status = "saved"
-        self.status_bar5.set("Spaces: %d %s" %(self.spaces, self.status))
+        self.status_bar5.set("%s" %self.status)
 
     def edit_cut(self, event=None):
         """
