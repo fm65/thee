@@ -12,6 +12,7 @@ setup(
 		"findwindow",
 		"highlighter",
 		"linenumbers",
+		"statusbar",
 		"textarea",
 		"texteditor",
 		"syntax",

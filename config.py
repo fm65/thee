@@ -18,6 +18,6 @@ font = {
 
 	'statusbar': {
 		'family': "TkHeadingFont",
-		'size': 9
+		'size': 8
 	}
 }
