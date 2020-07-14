@@ -1,6 +1,6 @@
 import tkinter as tk
 
-import syntax
+from . import syntax
 
 class Highlighter:
     def __init__(self, text_widget):

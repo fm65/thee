@@ -13,20 +13,19 @@ __status__     = "Production"
 #------------------------------------------------------------------------#
 
 import os
-import config
+from . import config
 import tkinter as tk
 import tkinter.ttk as ttk
 import tkinter.messagebox as msg
 from pathlib import Path
 from tkinter import filedialog
 
-from textarea    import TextArea
-from linenumbers import LineNumbers
-from statusbar   import StatusBar
-from highlighter import Highlighter
-from findwindow  import FindWindow
-from terminal    import Terminal
-
+from .textarea    import TextArea
+from .linenumbers import LineNumbers
+from .statusbar   import StatusBar
+from .highlighter import Highlighter
+from .findwindow  import FindWindow
+from .terminal    import Terminal
 
 class MainWindow(tk.Tk):
     def __init__(self):

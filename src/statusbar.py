@@ -1,5 +1,5 @@
 import tkinter as tk
-import config
+from . import config
 
 
 class StatusBar(tk.Canvas):
