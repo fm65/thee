@@ -1,5 +1,5 @@
 import tkinter as tk
-import config
+import src.config
 
 
 class StatusBar(tk.Canvas):
@@ -8,10 +8,10 @@ class StatusBar(tk.Canvas):
         self.master = master
         self.bg = bg
         self.label  = tk.Label(self,
-        font=(config.font['statusbar']['family'], 
-        config.font['statusbar']['size']),
-        background=config.color['statusbarbg'],
-        foreground=config.color['foreground'])
+        font=(src.config.font['statusbar']['family'], 
+        src.config.font['statusbar']['size']),
+        background=src.config.color['statusbarbg'],
+        foreground=src.config.color['foreground'])
         self.label.pack(fill="x")
 
     def set(self, format, *args):

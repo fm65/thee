@@ -2,6 +2,7 @@
 
 from distutils.core import setup
 
+
 setup(
 	name='thee',
 	version='1.0',
@@ -9,19 +10,19 @@ setup(
     long_description=open('README.md').read(),
 	author='Fidel R. Monteiro',
 	py_modules= [
-		"findwindow",
-		"highlighter",
-		"linenumbers",
-		"statusbar",
-		"textarea",
-		"texteditor",
-		"syntax",
-        "config",
-        "terminal",
-        "interactiveConsole"
+		"src/findwindow",
+		"src/highlighter",
+		"src/linenumbers",
+		"src/statusbar",
+		"src/textarea",
+		"src/texteditor",
+		"src/syntax",
+        "src/config",
+        "src/terminal",
+        "src/interactiveConsole"
     ],
 	entry_points = {
-		"console_scripts": ["thee = texteditor:main"]	
+		"console_scripts": ["thee = src.texteditor:main"]	
 	},
     license="",
 )
