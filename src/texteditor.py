@@ -13,19 +13,19 @@ __status__     = "Production"
 #------------------------------------------------------------------------#
 
 import os
-import src.config
+from . import config
 import tkinter as tk
 import tkinter.ttk as ttk
 import tkinter.messagebox as msg
 from pathlib import Path
 from tkinter import filedialog
 
-from src.textarea    import TextArea
-from src.linenumbers import LineNumbers
-from src.statusbar   import StatusBar
-from src.highlighter import Highlighter
-from src.findwindow  import FindWindow
-from src.terminal    import Terminal
+from .textarea    import TextArea
+from .linenumbers import LineNumbers
+from .statusbar   import StatusBar
+from .highlighter import Highlighter
+from .findwindow  import FindWindow
+from .terminal    import Terminal
 
 class MainWindow(tk.Tk):
     def __init__(self):
@@ -53,12 +53,12 @@ class MainWindow(tk.Tk):
         self.line        = 1
         self.column      = 1
 
-        self.foreground       = src.config.color['foreground']
-        self.background       = src.config.color['background']
-        self.text_foreground  = src.config.color['text_foreground']
-        self.text_background  = src.config.color['text_background']
-        self.insertbackground = src.config.color['insertbackground']
-        self.statusbar_background = src.config.color['statusbarbg']
+        self.foreground       = config.color['foreground']
+        self.background       = config.color['background']
+        self.text_foreground  = config.color['text_foreground']
+        self.text_background  = config.color['text_background']
+        self.insertbackground = config.color['insertbackground']
+        self.statusbar_background = config.color['statusbarbg']
 
         self.frame1 = tk.Frame(self, bg=self.background, 
         width=self.width, height=self.height-15)
@@ -73,11 +73,11 @@ class MainWindow(tk.Tk):
        
         self.config_dir = os.path.join(str(Path.home()), '.thee')
 
-        self.text_font_size   = src.config.font['text']['size']
-        self.text_font_family = src.config.font['text']['family']
+        self.text_font_size   = config.font['text']['size']
+        self.text_font_family = config.font['text']['family']
 
-        self.statusbar_font_size   = src.config.font['statusbar']['size']
-        self.statusbar_font_family = src.config.font['statusbar']['family']
+        self.statusbar_font_size   = config.font['statusbar']['size']
+        self.statusbar_font_family = config.font['statusbar']['family']
 
         self.create_widget() # Entry point ==========#
         self.terminal = Terminal(self, self.text_area) # run terminal

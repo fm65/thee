@@ -1,6 +1,6 @@
 import tkinter as tk
 
-import src.syntax
+from . import syntax
 
 class Highlighter:
     def __init__(self, text_widget):
@@ -21,11 +21,11 @@ class Highlighter:
         self.highlight()
 
     def parse_syntax_file(self):
-        self.categories     = src.syntax.categories
-        self.numbers_colour = src.syntax.numbers['colour']
-        self.strings_colour = src.syntax.strings['colour']
-        self.commentlines_colour = src.syntax.commentlines['colour']
-        self.commentblocs_colour = src.syntax.commentblocs['colour']
+        self.categories     = syntax.categories
+        self.numbers_colour = syntax.numbers['colour']
+        self.strings_colour = syntax.strings['colour']
+        self.commentlines_colour = syntax.commentlines['colour']
+        self.commentblocs_colour = syntax.commentblocs['colour']
 
         self.configure_tags()
 

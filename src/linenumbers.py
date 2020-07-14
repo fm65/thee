@@ -1,5 +1,5 @@
 import tkinter as tk
-import src.config
+from . import config
 
 
 class LineNumbers(tk.Canvas):
@@ -19,7 +19,7 @@ class LineNumbers(tk.Canvas):
             if dline is None: break
             y = dline[1]
             linenum = str(i).split(".")[0]
-            self.create_text(2,y,anchor="nw", text=linenum, fill=src.config.color['linenumberfg'])
+            self.create_text(2,y,anchor="nw", text=linenum, fill=config.color['linenumberfg'])
             i = self.text_widget.index("%s+1line" % i)
 
         # Refreshes the canvas widget 30fps
